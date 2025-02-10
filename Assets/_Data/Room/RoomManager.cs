@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 public class RoomManager : NetworkBehaviour
 {
-    private static List<Room> rooms = new List<Room>();
+    [SerializeField] protected List<Room> rooms = new List<Room>();
     private static Dictionary<ulong, Room> playerRoomMap = new Dictionary<ulong, Room>();
+
+    public string roomNameInput = "Room_1234"; // Room Name Input
 
     [System.Serializable]
     public class Room
@@ -31,29 +33,34 @@ public class RoomManager : NetworkBehaviour
 
         if (IsServer)
         {
-            CreateRoomOnServer(NetworkManager.Singleton.LocalClientId);
+            CreateRoomOnServer(NetworkManager.Singleton.LocalClientId, roomNameInput);
         }
         else
         {
-            CreateRoomServerRpc(NetworkManager.Singleton.LocalClientId);
+            CreateRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomNameInput);
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void CreateRoomServerRpc(ulong clientId)
+    private void CreateRoomServerRpc(ulong clientId, string roomName)
     {
-        CreateRoomOnServer(clientId);
+        CreateRoomOnServer(clientId, roomName);
     }
 
-    private void CreateRoomOnServer(ulong clientId)
+    private void CreateRoomOnServer(ulong clientId, string roomName)
     {
-        string roomId = "Room_" + Random.Range(1000, 9999);
-        Room newRoom = new Room(roomId);
+        if (rooms.Exists(r => r.RoomID == roomName))
+        {
+            Debug.LogWarning($"[{clientId}] Room '{roomName}' already exists.");
+            return;
+        }
+
+        Room newRoom = new Room(roomName);
         newRoom.Players.Add(clientId);
         rooms.Add(newRoom);
         playerRoomMap[clientId] = newRoom;
 
-        Debug.Log($"[{clientId}] Created room: {roomId}");
+        Debug.Log($"[{clientId}] Created room: {roomName}");
     }
 
     [ContextMenu("Join Room")]
@@ -67,34 +74,32 @@ public class RoomManager : NetworkBehaviour
 
         if (IsServer)
         {
-            JoinAvailableRoom(NetworkManager.Singleton.LocalClientId);
+            JoinSpecificRoom(NetworkManager.Singleton.LocalClientId, roomNameInput);
         }
         else
         {
-            JoinRoomServerRpc(NetworkManager.Singleton.LocalClientId);
+            JoinRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomNameInput);
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void JoinRoomServerRpc(ulong clientId)
+    private void JoinRoomServerRpc(ulong clientId, string roomName)
     {
-        JoinAvailableRoom(clientId);
+        JoinSpecificRoom(clientId, roomName);
     }
 
-    private void JoinAvailableRoom(ulong clientId)
+    private void JoinSpecificRoom(ulong clientId, string roomName)
     {
-        foreach (var room in rooms)
+        Room room = rooms.Find(r => r.RoomID == roomName);
+        if (room == null)
         {
-            if (room.Players.Count < 4)
-            {
-                room.Players.Add(clientId);
-                playerRoomMap[clientId] = room;
-                Debug.Log($"[{clientId}] Joined room: {room.RoomID}");
-                return;
-            }
+            Debug.LogWarning($"[{clientId}] Room '{roomName}' not found.");
+            return;
         }
 
-        Debug.LogWarning($"[{clientId}] No available room to join.");
+        room.Players.Add(clientId);
+        playerRoomMap[clientId] = room;
+        Debug.Log($"[{clientId}] Joined room: {roomName}");
     }
 
     [ContextMenu("Leave Room")]
@@ -120,7 +125,7 @@ public class RoomManager : NetworkBehaviour
     {
         if (!playerRoomMap.TryGetValue(clientId, out Room room))
         {
-            Debug.LogWarning($"[{clientId}] Not in any room (Server check).");
+            Debug.LogWarning($"[{clientId}] Not in any room.");
             return;
         }
 

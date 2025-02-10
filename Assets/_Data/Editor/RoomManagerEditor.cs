@@ -17,6 +17,8 @@ public class RoomManagerEditor : Editor
             return;
         }
 
+        roomManager.roomNameInput = EditorGUILayout.TextField("Room Name", roomManager.roomNameInput);
+
         if (GUILayout.Button("Create Room"))
         {
             roomManager.CreateRoom();
