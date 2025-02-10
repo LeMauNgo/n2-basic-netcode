@@ -1,25 +1,28 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Collections;
 
 public class RoomManager : NetworkBehaviour
 {
-    [SerializeField] protected List<Room> rooms = new List<Room>();
+    [SerializeField] protected List<Room> rooms = new();
     private static Dictionary<ulong, Room> playerRoomMap = new Dictionary<ulong, Room>();
 
     public string roomNameInput = "Room_1234";
+    public int maxPlayersInput = 2;
+
+    [SerializeField] protected bool autoUpdateRooms = true;
 
     [System.Serializable]
     public class Room
     {
         public string RoomID;
+        public int MaxPlayers;
         public List<ulong> Players;
 
-        public Room(string id)
+        public Room(string id, int maxPlayers)
         {
             RoomID = id;
+            MaxPlayers = maxPlayers;
             Players = new List<ulong>();
         }
     }
@@ -43,9 +46,19 @@ public class RoomManager : NetworkBehaviour
         }
     }
 
-    [ContextMenu("Create Room")]
     public void CreateRoom()
     {
+        CreateRoom(this.roomNameInput, this.maxPlayersInput);
+    }
+
+    public void CreateRoom(string roomName, int maxPlayers)
+    {
+        if (!NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsServer)
+        {
+            Debug.LogWarning("Cannot create room. You are not connected to the server.");
+            return;
+        }
+
         if (playerRoomMap.ContainsKey(NetworkManager.Singleton.LocalClientId))
         {
             Debug.LogWarning($"[{NetworkManager.Singleton.LocalClientId}] Already in a room.");
@@ -54,21 +67,22 @@ public class RoomManager : NetworkBehaviour
 
         if (IsServer)
         {
-            CreateRoomOnServer(NetworkManager.Singleton.LocalClientId, roomNameInput);
+            CreateRoomOnServer(NetworkManager.Singleton.LocalClientId, roomName, maxPlayers);
         }
         else
         {
-            CreateRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomNameInput);
+            CreateRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomName, maxPlayers);
         }
     }
 
+
     [ServerRpc(RequireOwnership = false)]
-    private void CreateRoomServerRpc(ulong clientId, string roomName)
+    private void CreateRoomServerRpc(ulong clientId, string roomName, int maxPlayers)
     {
-        CreateRoomOnServer(clientId, roomName);
+        CreateRoomOnServer(clientId, roomName, maxPlayers);
     }
 
-    private void CreateRoomOnServer(ulong clientId, string roomName)
+    private void CreateRoomOnServer(ulong clientId, string roomName, int maxPlayers)
     {
         if (rooms.Exists(r => r.RoomID == roomName))
         {
@@ -76,18 +90,29 @@ public class RoomManager : NetworkBehaviour
             return;
         }
 
-        Room newRoom = new Room(roomName);
+        Room newRoom = new Room(roomName, maxPlayers);
         newRoom.Players.Add(clientId);
         rooms.Add(newRoom);
         playerRoomMap[clientId] = newRoom;
 
-        UpdateClientsRoomList();
-        Debug.Log($"[{clientId}] Created room: {roomName}");
+        if (autoUpdateRooms) UpdateClientsRoomList();
+
+        Debug.Log($"[{clientId}] Created room: {roomName} (Max Players: {maxPlayers})");
     }
 
-    [ContextMenu("Join Room")]
     public void JoinRoom()
     {
+        JoinRoom(this.roomNameInput);
+    }
+
+    public void JoinRoom(string roomName)
+    {
+        if (!NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsServer)
+        {
+            Debug.LogWarning("Cannot join room. You are not connected to the server.");
+            return;
+        }
+
         if (playerRoomMap.ContainsKey(NetworkManager.Singleton.LocalClientId))
         {
             Debug.LogWarning($"[{NetworkManager.Singleton.LocalClientId}] Already in a room.");
@@ -96,13 +121,21 @@ public class RoomManager : NetworkBehaviour
 
         if (IsServer)
         {
-            JoinSpecificRoom(NetworkManager.Singleton.LocalClientId, roomNameInput);
+            Room room = rooms.Find(r => r.RoomID == roomName);
+            if (room == null)
+            {
+                Debug.LogWarning($"[{NetworkManager.Singleton.LocalClientId}] Room '{roomName}' does not exist.");
+                return;
+            }
+
+            JoinSpecificRoom(NetworkManager.Singleton.LocalClientId, roomName);
         }
         else
         {
-            JoinRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomNameInput);
+            JoinRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomName);
         }
     }
+
 
     [ServerRpc(RequireOwnership = false)]
     private void JoinRoomServerRpc(ulong clientId, string roomName)
@@ -119,15 +152,33 @@ public class RoomManager : NetworkBehaviour
             return;
         }
 
+        if (room.Players.Count >= room.MaxPlayers)
+        {
+            Debug.LogWarning($"[{clientId}] Room '{roomName}' is full.");
+            return;
+        }
+
         room.Players.Add(clientId);
         playerRoomMap[clientId] = room;
-        UpdateClientsRoomList();
-        Debug.Log($"[{clientId}] Joined room: {roomName}");
+        if (autoUpdateRooms) UpdateClientsRoomList();
+
+        Debug.Log($"[{clientId}] Joined room: {roomName} (Players: {room.Players.Count}/{room.MaxPlayers})");
     }
 
-    [ContextMenu("Leave Room")]
     public void LeaveRoom()
     {
+        if (!NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsServer)
+        {
+            Debug.LogWarning("Cannot leave room. You are not connected to the server.");
+            return;
+        }
+
+        if (!playerRoomMap.ContainsKey(NetworkManager.Singleton.LocalClientId))
+        {
+            Debug.LogWarning($"[{NetworkManager.Singleton.LocalClientId}] You are not in any room.");
+            return;
+        }
+
         if (IsServer)
         {
             RemovePlayerFromRoom(NetworkManager.Singleton.LocalClientId);
@@ -137,6 +188,7 @@ public class RoomManager : NetworkBehaviour
             LeaveRoomServerRpc(NetworkManager.Singleton.LocalClientId);
         }
     }
+
 
     [ServerRpc(RequireOwnership = false)]
     private void LeaveRoomServerRpc(ulong clientId)
@@ -162,16 +214,18 @@ public class RoomManager : NetworkBehaviour
             rooms.Remove(room);
         }
 
-        UpdateClientsRoomList();
+        if (autoUpdateRooms) UpdateClientsRoomList();
     }
 
-    [ContextMenu("Show Room List")]
     public void ShowRoomList()
     {
-        Debug.Log("Current Rooms:");
-        foreach (var room in rooms)
+        if (IsServer)
         {
-            Debug.Log($"Room {room.RoomID} - Players: {string.Join(", ", room.Players)}");
+            SendRoomDataClientRpc(JsonUtility.ToJson(new RoomListWrapper(rooms)));
+        }
+        else
+        {
+            RequestRoomDataServerRpc();
         }
     }
 
@@ -182,7 +236,7 @@ public class RoomManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void SendRoomDataClientRpc(string json)
+    private void SendRoomDataClientRpc(string json, ClientRpcParams clientRpcParams = default)
     {
         RoomListWrapper wrapper = JsonUtility.FromJson<RoomListWrapper>(json);
         rooms = wrapper.Rooms;
@@ -192,6 +246,12 @@ public class RoomManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void RequestRoomDataServerRpc(ServerRpcParams rpcParams = default)
     {
-        UpdateClientsRoomList();
+        ulong senderClientId = rpcParams.Receive.SenderClientId;
+        string json = JsonUtility.ToJson(new RoomListWrapper(rooms));
+
+        SendRoomDataClientRpc(json, new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams { TargetClientIds = new List<ulong> { senderClientId } }
+        });
     }
 }
