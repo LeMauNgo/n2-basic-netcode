@@ -1,8 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Collections;
 
 public class RoomManager : NetworkBehaviour
 {
@@ -43,8 +41,12 @@ public class RoomManager : NetworkBehaviour
         }
     }
 
-    [ContextMenu("Create Room")]
     public void CreateRoom()
+    {
+        this.CreateRoom(this.roomNameInput);
+    }
+
+    public void CreateRoom(string roomName)
     {
         if (playerRoomMap.ContainsKey(NetworkManager.Singleton.LocalClientId))
         {
@@ -54,11 +56,11 @@ public class RoomManager : NetworkBehaviour
 
         if (IsServer)
         {
-            CreateRoomOnServer(NetworkManager.Singleton.LocalClientId, roomNameInput);
+            CreateRoomOnServer(NetworkManager.Singleton.LocalClientId, roomName);
         }
         else
         {
-            CreateRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomNameInput);
+            CreateRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomName);
         }
     }
 
@@ -85,8 +87,12 @@ public class RoomManager : NetworkBehaviour
         Debug.Log($"[{clientId}] Created room: {roomName}");
     }
 
-    [ContextMenu("Join Room")]
     public void JoinRoom()
+    {
+        this.JoinRoom(this.roomNameInput);
+    }
+
+    public void JoinRoom(string roomName)
     {
         if (playerRoomMap.ContainsKey(NetworkManager.Singleton.LocalClientId))
         {
@@ -96,11 +102,11 @@ public class RoomManager : NetworkBehaviour
 
         if (IsServer)
         {
-            JoinSpecificRoom(NetworkManager.Singleton.LocalClientId, roomNameInput);
+            JoinSpecificRoom(NetworkManager.Singleton.LocalClientId, roomName);
         }
         else
         {
-            JoinRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomNameInput);
+            JoinRoomServerRpc(NetworkManager.Singleton.LocalClientId, roomName);
         }
     }
 
@@ -125,7 +131,6 @@ public class RoomManager : NetworkBehaviour
         Debug.Log($"[{clientId}] Joined room: {roomName}");
     }
 
-    [ContextMenu("Leave Room")]
     public void LeaveRoom()
     {
         if (IsServer)
@@ -165,7 +170,6 @@ public class RoomManager : NetworkBehaviour
         UpdateClientsRoomList();
     }
 
-    [ContextMenu("Show Room List")]
     public void ShowRoomList()
     {
         Debug.Log("Current Rooms:");
