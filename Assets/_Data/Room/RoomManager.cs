@@ -10,6 +10,8 @@ public class RoomManager : NetworkBehaviour
     public string roomNameInput = "Room_1234";
     public int maxPlayersInput = 2;
 
+    [SerializeField] protected bool autoUpdateRooms = true;
+
     [System.Serializable]
     public class Room
     {
@@ -93,7 +95,8 @@ public class RoomManager : NetworkBehaviour
         rooms.Add(newRoom);
         playerRoomMap[clientId] = newRoom;
 
-        UpdateClientsRoomList();
+        if (autoUpdateRooms) UpdateClientsRoomList();
+
         Debug.Log($"[{clientId}] Created room: {roomName} (Max Players: {maxPlayers})");
     }
 
@@ -157,7 +160,8 @@ public class RoomManager : NetworkBehaviour
 
         room.Players.Add(clientId);
         playerRoomMap[clientId] = room;
-        UpdateClientsRoomList();
+        if (autoUpdateRooms) UpdateClientsRoomList();
+
         Debug.Log($"[{clientId}] Joined room: {roomName} (Players: {room.Players.Count}/{room.MaxPlayers})");
     }
 
@@ -210,15 +214,18 @@ public class RoomManager : NetworkBehaviour
             rooms.Remove(room);
         }
 
-        UpdateClientsRoomList();
+        if (autoUpdateRooms) UpdateClientsRoomList();
     }
 
     public void ShowRoomList()
     {
-        Debug.Log("Current Rooms:");
-        foreach (var room in rooms)
+        if (IsServer)
         {
-            Debug.Log($"Room {room.RoomID} - Players: {room.Players.Count}/{room.MaxPlayers}");
+            SendRoomDataClientRpc(JsonUtility.ToJson(new RoomListWrapper(rooms)));
+        }
+        else
+        {
+            RequestRoomDataServerRpc();
         }
     }
 
@@ -229,7 +236,7 @@ public class RoomManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void SendRoomDataClientRpc(string json)
+    private void SendRoomDataClientRpc(string json, ClientRpcParams clientRpcParams = default)
     {
         RoomListWrapper wrapper = JsonUtility.FromJson<RoomListWrapper>(json);
         rooms = wrapper.Rooms;
@@ -239,6 +246,12 @@ public class RoomManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void RequestRoomDataServerRpc(ServerRpcParams rpcParams = default)
     {
-        UpdateClientsRoomList();
+        ulong senderClientId = rpcParams.Receive.SenderClientId;
+        string json = JsonUtility.ToJson(new RoomListWrapper(rooms));
+
+        SendRoomDataClientRpc(json, new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams { TargetClientIds = new List<ulong> { senderClientId } }
+        });
     }
 }

@@ -544,6 +544,7 @@ MonoBehaviour:
   rooms: []
   roomNameInput: Room_1234
   maxPlayersInput: 2
+  autoUpdateRooms: 0
 --- !u!4 &611531144
 Transform:
   m_ObjectHideFlags: 0
