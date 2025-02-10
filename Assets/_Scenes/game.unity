@@ -541,6 +541,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  rooms: []
+  roomNameInput: Room_1234
+  maxPlayersInput: 2
 --- !u!4 &611531144
 Transform:
   m_ObjectHideFlags: 0
