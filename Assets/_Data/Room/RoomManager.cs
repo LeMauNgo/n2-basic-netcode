@@ -1,13 +1,15 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Collections;
 
 public class RoomManager : NetworkBehaviour
 {
     [SerializeField] protected List<Room> rooms = new List<Room>();
     private static Dictionary<ulong, Room> playerRoomMap = new Dictionary<ulong, Room>();
 
-    public string roomNameInput = "Room_1234"; // Room Name Input
+    public string roomNameInput = "Room_1234";
 
     [System.Serializable]
     public class Room
@@ -19,6 +21,25 @@ public class RoomManager : NetworkBehaviour
         {
             RoomID = id;
             Players = new List<ulong>();
+        }
+    }
+
+    [System.Serializable]
+    private class RoomListWrapper
+    {
+        public List<Room> Rooms;
+
+        public RoomListWrapper(List<Room> rooms)
+        {
+            Rooms = rooms;
+        }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            RequestRoomDataServerRpc();
         }
     }
 
@@ -60,6 +81,7 @@ public class RoomManager : NetworkBehaviour
         rooms.Add(newRoom);
         playerRoomMap[clientId] = newRoom;
 
+        UpdateClientsRoomList();
         Debug.Log($"[{clientId}] Created room: {roomName}");
     }
 
@@ -99,6 +121,7 @@ public class RoomManager : NetworkBehaviour
 
         room.Players.Add(clientId);
         playerRoomMap[clientId] = room;
+        UpdateClientsRoomList();
         Debug.Log($"[{clientId}] Joined room: {roomName}");
     }
 
@@ -138,6 +161,8 @@ public class RoomManager : NetworkBehaviour
             Debug.Log($"Room {room.RoomID} is now empty and will be removed.");
             rooms.Remove(room);
         }
+
+        UpdateClientsRoomList();
     }
 
     [ContextMenu("Show Room List")]
@@ -148,5 +173,25 @@ public class RoomManager : NetworkBehaviour
         {
             Debug.Log($"Room {room.RoomID} - Players: {string.Join(", ", room.Players)}");
         }
+    }
+
+    private void UpdateClientsRoomList()
+    {
+        string json = JsonUtility.ToJson(new RoomListWrapper(rooms));
+        SendRoomDataClientRpc(json);
+    }
+
+    [ClientRpc]
+    private void SendRoomDataClientRpc(string json)
+    {
+        RoomListWrapper wrapper = JsonUtility.FromJson<RoomListWrapper>(json);
+        rooms = wrapper.Rooms;
+        Debug.Log("Updated room list from server.");
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestRoomDataServerRpc(ServerRpcParams rpcParams = default)
+    {
+        UpdateClientsRoomList();
     }
 }
