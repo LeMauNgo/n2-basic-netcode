@@ -37,7 +37,7 @@ public class NetworkManagerCustom : MonoBehaviour
 
     void StartClient()
     {
-        string ip = string.IsNullOrEmpty(ipInputField.text) ? "0.0.0.0" : ipInputField.text;
+        string ip = string.IsNullOrEmpty(ipInputField.text) ? "127.0.0.1" : ipInputField.text;
         string port = string.IsNullOrEmpty(portInputField.text) ? "7777" : portInputField.text;
 
         transport.SetConnectionData(ip, ushort.Parse(port));
