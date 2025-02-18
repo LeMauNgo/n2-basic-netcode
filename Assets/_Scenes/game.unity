@@ -4152,7 +4152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39a9e9e35c9caec4f8d5029d68ff0dc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
   playerPrefab: {fileID: 4179029445588859838, guid: 80f66f3f87159bd4cabf71aa04797abd, type: 3}
 --- !u!4 &1269121896
 Transform:
