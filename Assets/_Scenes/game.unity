@@ -4980,6 +4980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   logText: {fileID: 1794595827}
+  maxText: 1000
 --- !u!4 &1839146387
 Transform:
   m_ObjectHideFlags: 0
