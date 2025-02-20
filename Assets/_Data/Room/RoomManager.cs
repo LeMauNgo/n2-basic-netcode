@@ -139,14 +139,14 @@ public class RoomManager : NetworkBehaviour
 
     protected virtual void MoveClientToAnchor(ulong clientId, RoomAnchor roomAnchor)
     {
-        PlayerCtrl playerCtrl = PlayersManager.Instance.GetPlayerObject(clientId);
+        ClientCtrl playerCtrl = ClientManager.Instance.GetClientObject(clientId);
         playerCtrl.transform.position = roomAnchor.transform.position;
     }
 
     protected virtual RoomAnchor CreateRoomAnchor(Room newRoom)
     {
         GameObject anchorObj = Instantiate(this.anchorPrefab);
-        RoomAnchor roomAnchor = anchorObj.AddComponent<RoomAnchor>();
+        RoomAnchor roomAnchor = anchorObj.GetComponent<RoomAnchor>();
         newRoom.roomAnchor = roomAnchor;
         Vector3 pos = Vector3.zero;
         pos.x = 100 * newRoom.RoomID;

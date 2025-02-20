@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -1092407361690179956}
   - component: {fileID: 2202534603441461156}
   m_Layer: 0
-  m_Name: PlayerServer
+  m_Name: ClientPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

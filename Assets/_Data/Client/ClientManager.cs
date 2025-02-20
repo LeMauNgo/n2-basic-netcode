@@ -1,14 +1,14 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public class PlayersManager : SaiSingleton<PlayersManager>
+public class ClientManager : SaiSingleton<ClientManager>
 {
-    public virtual PlayerCtrl GetPlayerObject(ulong clientId)
+    public virtual ClientCtrl GetClientObject(ulong clientId)
     {
         if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
         {
             GameObject playerObject = client.PlayerObject.gameObject;
-            PlayerCtrl playerCtrl = playerObject.GetComponent<PlayerCtrl>();
+            ClientCtrl playerCtrl = playerObject.GetComponent<ClientCtrl>();
             Debug.Log($"Found PlayerObject for Client {clientId}: {playerObject.name}");
             return playerCtrl;
         }
