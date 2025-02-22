@@ -26,6 +26,8 @@ public class ServerManager : SaiSingleton<ServerManager>
         this.AddServer("Server 5", "127.0.0.1", 5555);
         this.AddServer("Server 6", "127.0.0.1", 6666);
         this.AddServer("Server 7", "127.0.0.1", 7777);
+        this.AddServer("Server 8", "127.0.0.1", 8888);
+        this.AddServer("Server 9", "127.0.0.1", 9999);
         Debug.LogWarning(transform.name + ": LoadServerList", gameObject);
     }
 

@@ -9,7 +9,7 @@ public class RoomAnchorCtrl : SaiBehaviour
 
     protected virtual void OnEnable()
     {
-        Invoke(nameof(MoveRoomContainer),1f);
+        Invoke(nameof(MoveRoomContainer), 1f);
     }
 
     protected override void LoadComponents()
@@ -27,7 +27,7 @@ public class RoomAnchorCtrl : SaiBehaviour
 
     protected virtual void MoveRoomContainer()
     {
-        this.roomContainer = FindAnyObjectByType< RoomContainerCtrl>();
+        this.roomContainer = FindAnyObjectByType<RoomContainerCtrl>();
         roomContainer.transform.position = transform.position;
         Debug.Log("MoveRoomContainer: " + transform.position);
     }

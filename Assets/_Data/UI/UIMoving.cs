@@ -33,7 +33,7 @@ public abstract class UIMoving : SaiBehaviour
     }
 
     protected abstract void LoadPointA();
-    
+
     protected abstract void LoadPointB();
 
 
@@ -46,7 +46,7 @@ public abstract class UIMoving : SaiBehaviour
 
     protected virtual void Moving()
     {
-        if(!this.canMove) return;
+        if (!this.canMove) return;
         Vector3 target = movingToB ? this.start : this.end;
         transform.localPosition = Vector3.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
 
@@ -60,9 +60,9 @@ public abstract class UIMoving : SaiBehaviour
     [ProButton]
     public virtual void Move()
     {
-        DisappearAll();
+        DisappearAll(this);
         this.canMove = true;
-        if(!this.movingToB) transform.localPosition = this.start;
+        if (!this.movingToB) transform.localPosition = this.start;
     }
 
     [ProButton]
@@ -72,10 +72,11 @@ public abstract class UIMoving : SaiBehaviour
         this.movingToB = false;
     }
 
-    public static void DisappearAll()
+    public static void DisappearAll(UIMoving caller = null)
     {
         foreach (var instance in instances)
         {
+            if (instance == caller) continue;
             instance.Disappear();
         }
     }
