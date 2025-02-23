@@ -636,7 +636,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 130, y: -27}
+  m_AnchoredPosition: {x: 130, y: -270}
   m_SizeDelta: {x: 230, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3191697080156467259
@@ -1200,6 +1200,7 @@ GameObject:
   - component: {fileID: 5832736442312252936}
   - component: {fileID: 3498860175202381469}
   - component: {fileID: 7302434948269668441}
+  - component: {fileID: 2956102213488289604}
   m_Layer: 5
   m_Name: BtnLeaveRoom
   m_TagString: Untagged
@@ -1309,6 +1310,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2956102213488289604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4652843487058934721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da3a77edf6ab9df499279003769cf92d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 7302434948269668441}
+  buttonText: {fileID: 7029107702843261239}
+  doubleClickThreshold: 0.3
+  lastClickTime: 0
 --- !u!1 &5005850398140546429
 GameObject:
   m_ObjectHideFlags: 0

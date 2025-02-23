@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class UIRoomMoving : UIMoving
@@ -6,7 +7,7 @@ public class UIRoomMoving : UIMoving
     {
         base.Start();
         NetworkEventManager.Instance.OnClientConnected.AddListener(this.OnClientConnected);
-        RoomManager.OnClientJoinedRoom += HandleClientJoinedRoom;
+        RoomManager.OnLeftRoomAtClient += HandleOnLeftRoomAtClient;
     }
 
     protected override void LoadPointA()
@@ -25,11 +26,16 @@ public class UIRoomMoving : UIMoving
 
     protected virtual void OnClientConnected()
     {
+        Debug.Log(transform.name + ": OnClientConnected", gameObject);
         this.Move();
     }
 
-    protected virtual void HandleClientJoinedRoom(ulong clientId, string roomName)
+    protected virtual void HandleOnLeftRoomAtClient(ulong clientId, string roomName)
     {
-        //this.Disappear();
+        string message = $"Client {clientId} left roomName {roomName}";
+        Debug.Log(transform.name + ": HandleOnClientLeftRoom - " + message, gameObject);
+        ulong localClientID = NetworkManager.Singleton.LocalClientId;
+        if (localClientID != clientId) return;
+        this.Move();
     }
 }

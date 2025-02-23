@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ServerUIManager : SaiSingleton<ServerUIManager>
+public class UIServerManager : SaiSingleton<UIServerManager>
 {
     [SerializeField] protected BtnChooseServer btnPrefab;
 

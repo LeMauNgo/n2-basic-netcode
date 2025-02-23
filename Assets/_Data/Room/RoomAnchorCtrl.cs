@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -29,6 +30,6 @@ public class RoomAnchorCtrl : SaiBehaviour
     {
         this.roomContainer = FindAnyObjectByType<RoomContainerCtrl>();
         roomContainer.transform.position = transform.position;
-        Debug.Log("MoveRoomContainer: " + transform.position);
+        Debug.Log("MoveRoomContainer: " + transform.position, gameObject);
     }
 }

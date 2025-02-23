@@ -36,7 +36,7 @@ public class NetworkEventManager : SaiSingleton<NetworkEventManager>
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            Debug.Log("Host started successfully!");
+            Debug.Log("Host started successfully!", gameObject);
             OnHostStarted?.Invoke(); // Trigger Host success event
         }
         else if (NetworkManager.Singleton.IsServer)
@@ -51,12 +51,12 @@ public class NetworkEventManager : SaiSingleton<NetworkEventManager>
     {
         if (clientId == NetworkManager.Singleton.LocalClientId)
         {
-            Debug.Log("Successfully connected to the server!");
+            Debug.Log("Successfully connected to the server!", gameObject);
             OnClientConnected?.Invoke(); // Trigger Client connection success event
         }
         else
         {
-            Debug.Log($"New client joined with ID: {clientId}");
+            Debug.Log($"New client joined with ID: {clientId}", gameObject);
             OnClientJoined?.Invoke(); // Trigger new Client joined event
         }
     }
