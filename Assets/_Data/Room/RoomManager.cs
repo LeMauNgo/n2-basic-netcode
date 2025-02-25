@@ -2,7 +2,6 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
 using System;
-using UnityEditor.PackageManager;
 
 public class RoomManager : NetworkBehaviour
 {
@@ -18,9 +17,9 @@ public class RoomManager : NetworkBehaviour
     public int maxPlayersInput = 2;
 
     public static event Action<ulong, string> OnClientJoinedRoomOnServer;
-    public static event Action<ulong, string> OnJoinedRoomAtClient;
-
     public static event Action<ulong, string> OnClientLeftRoomOnServer;
+
+    public static event Action<ulong, string> OnJoinedRoomAtClient;
     public static event Action<ulong, string> OnLeftRoomAtClient;
 
     [System.Serializable]

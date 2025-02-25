@@ -1200,7 +1200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9101254547235884692, guid: 3dcf23ba632d7584f9f9317c42e8fb11, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -940
+      value: -931
       objectReference: {fileID: 0}
     - target: {fileID: 9101254547235884692, guid: 3dcf23ba632d7584f9f9317c42e8fb11, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1406,7 +1406,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5216308102410382840, guid: 081fc0d150190264a9a6623ac91be5a5, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -145
+      value: -122.99994
       objectReference: {fileID: 0}
     - target: {fileID: 5216308102410382840, guid: 081fc0d150190264a9a6623ac91be5a5, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1451,6 +1451,14 @@ PrefabInstance:
     - target: {fileID: 8805131736166951302, guid: 081fc0d150190264a9a6623ac91be5a5, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8805131736166951302, guid: 081fc0d150190264a9a6623ac91be5a5, type: 3}
+      propertyPath: standByPosition.x
+      value: -593.8103
+      objectReference: {fileID: 0}
+    - target: {fileID: 8805131736166951302, guid: 081fc0d150190264a9a6623ac91be5a5, type: 3}
+      propertyPath: standByPosition.y
+      value: -15.153046
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1543,7 +1551,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 637740457702059068, guid: 653492037827a5147a28d650d2efa306, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -520
+      value: -511
       objectReference: {fileID: 0}
     - target: {fileID: 637740457702059068, guid: 653492037827a5147a28d650d2efa306, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1564,6 +1572,14 @@ PrefabInstance:
     - target: {fileID: 1611814168819745527, guid: 653492037827a5147a28d650d2efa306, type: 3}
       propertyPath: m_Name
       value: UIServerCreate
+      objectReference: {fileID: 0}
+    - target: {fileID: 2594347753489068292, guid: 653492037827a5147a28d650d2efa306, type: 3}
+      propertyPath: standByPosition.x
+      value: -972.8103
+      objectReference: {fileID: 0}
+    - target: {fileID: 2594347753489068292, guid: 653492037827a5147a28d650d2efa306, type: 3}
+      propertyPath: standByPosition.y
+      value: 259.84695
       objectReference: {fileID: 0}
     - target: {fileID: 2830597692450606585, guid: 653492037827a5147a28d650d2efa306, type: 3}
       propertyPath: m_Name
@@ -1800,7 +1816,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 734547458667004684, guid: 77eb071b7c7d0664281bb2188caaec5b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -820
+      value: -811
       objectReference: {fileID: 0}
     - target: {fileID: 734547458667004684, guid: 77eb071b7c7d0664281bb2188caaec5b, type: 3}
       propertyPath: m_AnchoredPosition.y
