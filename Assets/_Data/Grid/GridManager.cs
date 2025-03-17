@@ -6,13 +6,13 @@ public class GridManager : SaiSingleton<GridManager>
 {
     [SerializeField] protected Transform startPoint;
     [SerializeField] protected GridCell cellPrefab;
-    [SerializeField] protected Vector2 size = new(22, 7);
+    [SerializeField] protected Vector2 size = new(17, 7);
     [SerializeField] protected List<GridCell> createdCells = new();
 
     protected override void Start()
     {
         base.Start();
-        this.cellPrefab.gameObject.SetActive(false);
+        this.cellPrefab.SetActive(false);
     }
 
     protected override void LoadComponents()
@@ -33,7 +33,7 @@ public class GridManager : SaiSingleton<GridManager>
     {
         if (this.cellPrefab != null) return;
         this.cellPrefab = GetComponentInChildren<GridCell>();
-        this.cellPrefab.SetActive(false);
+        //this.cellPrefab.SetActive(false);
         Debug.LogWarning(transform.name + ": LoadGridCell", gameObject);
     }
 
