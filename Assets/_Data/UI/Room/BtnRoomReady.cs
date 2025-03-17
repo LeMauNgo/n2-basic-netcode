@@ -7,6 +7,5 @@ public class BtnRoomReady : ButttonAbstract
         RoomAnchorCtrl roomAnchorCtrl = FindAnyObjectByType<RoomAnchorCtrl>();
         ClientCtrl myClientCtrl = ClientManager.Instance.GetMyClient();
         myClientCtrl.ClientMoving.SetTarget(roomAnchorCtrl.transform);
-        Debug.Log("Player Ready");
     }
 }
